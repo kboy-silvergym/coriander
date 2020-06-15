@@ -1,7 +1,8 @@
-import 'package:coriander/book_list_page.dart';
-import 'package:coriander/main_model.dart';
+import 'package:coriander/presentation/book_list/book_list_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'main_model.dart';
 
 void main() => runApp(MyApp());
 
