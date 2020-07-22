@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:coriander/domain/book.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import 'add_book_model.dart';
@@ -7,6 +10,9 @@ import 'add_book_model.dart';
 class AddBookPage extends StatelessWidget {
   AddBookPage({this.book});
   final Book book;
+
+  final picker = ImagePicker();
+
   @override
   Widget build(BuildContext context) {
     final bool isUpdate = book != null;
@@ -18,38 +24,72 @@ class AddBookPage extends StatelessWidget {
 
     return ChangeNotifierProvider<AddBookModel>(
       create: (_) => AddBookModel(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(isUpdate ? '本を編集' : '本を追加'),
-        ),
-        body: Consumer<AddBookModel>(
-          builder: (context, model, child) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: <Widget>[
-                  TextField(
-                    controller: textEditingController,
-                    onChanged: (text) {
-                      model.bookTitle = text;
-                    },
+      child: Stack(
+        children: <Widget>[
+          Scaffold(
+            appBar: AppBar(
+              title: Text(isUpdate ? '本を編集' : '本を追加'),
+            ),
+            body: Consumer<AddBookModel>(
+              builder: (context, model, child) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: <Widget>[
+                      InkWell(
+                        onTap: () async {
+                          // TODO: カメラロール開いて写真選ぶ
+                          final pickedFile = await picker.getImage(
+                              source: ImageSource.gallery);
+                          model.setImage(File(pickedFile.path));
+                        },
+                        child: SizedBox(
+                          width: 100,
+                          height: 160,
+                          child: model.imageFile != null
+                              ? Image.file(model.imageFile)
+                              : Container(
+                                  color: Colors.grey,
+                                ),
+                        ),
+                      ),
+                      TextField(
+                        controller: textEditingController,
+                        onChanged: (text) {
+                          model.bookTitle = text;
+                        },
+                      ),
+                      RaisedButton(
+                        child: Text(isUpdate ? '更新する' : '追加する'),
+                        onPressed: () async {
+                          model.startLoading();
+
+                          if (isUpdate) {
+                            await updateBook(model, context);
+                          } else {
+                            // firestoreに本を追加
+                            await addBook(model, context);
+                          }
+                          model.endLoading();
+                        },
+                      ),
+                    ],
                   ),
-                  RaisedButton(
-                    child: Text(isUpdate ? '更新する' : '追加する'),
-                    onPressed: () async {
-                      if (isUpdate) {
-                        await updateBook(model, context);
-                      } else {
-                        // firestoreに本を追加
-                        await addBook(model, context);
-                      }
-                    },
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
+                );
+              },
+            ),
+          ),
+          Consumer<AddBookModel>(builder: (context, model, child) {
+            return model.isLoading
+                ? Container(
+                    color: Colors.black.withOpacity(0.3),
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                : SizedBox();
+          }),
+        ],
       ),
     );
   }
