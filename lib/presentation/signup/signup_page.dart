@@ -1,4 +1,3 @@
-import 'package:coriander/domain/book.dart';
 import 'package:coriander/presentation/signup/signup_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -64,7 +63,7 @@ class SignUpPage extends StatelessWidget {
     BuildContext context,
     String title,
   ) {
-    showDialog(
+    return showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(

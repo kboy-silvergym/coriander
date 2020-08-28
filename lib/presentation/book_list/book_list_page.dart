@@ -108,7 +108,7 @@ class BookListPage extends StatelessWidget {
     BuildContext context,
     String title,
   ) {
-    showDialog(
+    return showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(

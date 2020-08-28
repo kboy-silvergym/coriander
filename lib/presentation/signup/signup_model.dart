@@ -18,14 +18,14 @@ class SignUpModel extends ChangeNotifier {
     }
 
     // todo
-    final FirebaseUser user = (await _auth.createUserWithEmailAndPassword(
+    final User user = (await _auth.createUserWithEmailAndPassword(
       email: mail,
       password: password,
     ))
         .user;
     final email = user.email;
 
-    Firestore.instance.collection('users').add(
+    FirebaseFirestore.instance.collection('users').add(
       {
         'email': email,
         'createdAt': Timestamp.now(),
