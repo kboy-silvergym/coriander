@@ -50,7 +50,7 @@ class AddBookModel extends ChangeNotifier {
         .putFile(
           imageFile,
         )
-        .onComplete;
+        .snapshot;
     final downloadURL = await snapshot.ref.getDownloadURL();
     return downloadURL;
   }
